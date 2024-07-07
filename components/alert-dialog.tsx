@@ -53,8 +53,8 @@ export function AlertDialogBox({
             account and remove your data from servers.
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter>
-          <Button size={"sm"} onClick={handleClose}>
+        <AlertDialogFooter >
+          <Button size={"sm"} onClick={handleClose} className="mt-3 md:mt-0">
             Cancel
           </Button>
           <Button

@@ -31,11 +31,12 @@ const ViewContent = ({ selectedtask }: Props) => {
       <div className="grid gap-4 py-4">
         <DialogDescription>{selectedtask.description}</DialogDescription>
       </div>
-      <DialogFooter>
+      <DialogFooter >
+        <div className="flex items-center justify-between w-full">
         {selectedtask.status && (
           <Button
             variant="ghost"
-            className="h-6 rounded-sm text-[11px] bg-gray-100 cursor-auto"
+            className="h-6 rounded-sm text-[11px] bg-gray-100 cursor-auto  "
           >
             {getStatus(selectedtask.status)}
           </Button>
@@ -51,6 +52,7 @@ const ViewContent = ({ selectedtask }: Props) => {
             {selectedtask.priority[0]}
           </Avatar>
         )}
+        </div>
       </DialogFooter>
     </DialogContent>
   );
