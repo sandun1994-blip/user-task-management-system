@@ -1,71 +1,118 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { FaUser } from "react-icons/fa";
+import { useEffect, useMemo, useState } from "react";
 import { RiAddLargeLine } from "react-icons/ri";
 import TaskForm from "./task-form";
+import { Task } from "@prisma/client";
+import TaskCard from "./task-card";
+import { Action } from "@/types";
+import { AlertDialogBox } from "@/components/alert-dialog";
+import { SelectBox } from "@/components/select-box";
+import { priorityItem, statusItem } from "@/data/constatnt";
+import { Separator } from "@/components/ui/separator";
+import { LuTimerReset } from "react-icons/lu";
+type Props = {
+  tasks: Task[];
+};
 
-export const TaskList = () => {
-  const [task, selectedTask] = useState({ action: "add", taskData: {} });
+export const TaskList = ({ tasks }: Props) => {
+  const [selectedtask, setSelectedTask] = useState<Partial<Task>>({});
   const [open, setOpen] = useState(false);
-  const router = useRouter();
-  const params = useSearchParams();
-  const editHandle = (tag: string) => {
-    if (tag) {
-      router.push("?tag=" + tag);
-    }
+  const [openDelete, setOpenDelete] = useState(false);
+  const [method, setMethod] = useState<Action>(Action.EDIT);
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [selectedPriority, setSelectedPriority] = useState("");
+
+  const tasksData = useMemo(() => {
+    return tasks.filter((task) => {
+      return (
+        (selectedStatus ? task.status === selectedStatus : true) &&
+        (selectedPriority ? task.priority === selectedPriority : true)
+      );
+    });
+  }, [tasks, selectedStatus, selectedPriority]);
+
+  const handleReset = () => {
+    setSelectedStatus("");
+    setSelectedPriority("");
   };
 
-  useEffect(() => {
-    console.log("ok");
-  }, [params]);
-
   return (
-    <>{open && <TaskForm setOpen={setOpen} open={open} selectedTask={selectedTask} task={task}/>}
-    <div className="space-y-4">
-      <Button
-        variant="outline"
-        onClick={() => {
-          setOpen(true);
-        }}
-      >
-        {" "}
-        <RiAddLargeLine className="w-4 h-4 mr-2 " /> Add Task
-      </Button>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-        <div
-          role="button"
-          className="aspect-video relative h-full w-full bg-muted rounded-sm flex flex-col gap-y-1 
-          items-center justify-center hover:opacity-75 transition"
-        >
-          <p className="text-sm">Create new board</p>
-          <span className="text-xs">5 remaining</span>
-          <button onClick={() => editHandle("edit")}>edit</button>
-        </div>
+    <>
+      {open && (
+        <TaskForm
+          setOpen={setOpen}
+          open={open}
+          setSelectedTask={setSelectedTask}
+          selectedtask={selectedtask}
+          method={method}
+        />
+      )}
+      {openDelete && (
+        <AlertDialogBox
+          setOpen={setOpenDelete}
+          open={openDelete}
+          setSelectedTask={setSelectedTask}
+          selectedtask={selectedtask}
+        />
+      )}
+      <div className="space-y-4">
+        <div className="w-full  md:flex space-y-4 md:space-y-0 items-center justify-between gap-10 ">
+          <Button
+            variant="outline"
+            onClick={() => {
+              setMethod(Action.EDIT);
+              setOpen(true);
+            }}
+          >
+            {" "}
+            <RiAddLargeLine className="w-4 h-4 mr-2 " /> Add Task
+          </Button>
 
-        <div
-          role="button"
-          className="aspect-video relative h-full w-full bg-muted rounded-sm flex flex-col gap-y-1 
-          items-center justify-center hover:opacity-75 transition"
-        >
-          <p className="text-sm">Create new board</p>
-          <span className="text-xs">5 remaining</span>
+          <SelectBox
+            title="Select a status"
+            label="Status"
+            items={statusItem}
+            setSelectedValue={setSelectedStatus}
+            selectedValue={selectedStatus}
+          />
+
+          <SelectBox
+            title="Select a priority"
+            label="Priority"
+            items={priorityItem}
+            setSelectedValue={setSelectedPriority}
+            selectedValue={selectedPriority}
+          />
+          <div className="flex-1 flex justify-start ">
+            {(selectedPriority || selectedStatus) && (
+              <Button
+                variant="destructive"
+                className=""
+                size={"sm"}
+                onClick={handleReset}
+              >
+                {" "}
+                <LuTimerReset className="w-4 h-4 mr-2 " /> Reset
+              </Button>
+            )}
+          </div>
+        </div>
+        <Separator />
+        <div className="grid md:grid-cols-2  lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {tasksData.length > 0 &&
+            tasksData.map((task) => (
+              <TaskCard
+                key={task.id}
+                task={task}
+                setSelectedTask={setSelectedTask}
+                setOpen={setOpen}
+                setMethod={setMethod}
+                setOpenDelete={setOpenDelete}
+              />
+            ))}
         </div>
       </div>
-    </div>
     </>
   );
 };
-
-TaskList.Loading= function TaskLoading() {
-  const array = Array.from({ length: 12 }, (_, i) => i + 1);
-  return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-      {array.map((i) => (
-        <Skeleton key={i} className="aspect-video h-full w-full p-2" />
-      ))}
-    </div>
-  );
-}

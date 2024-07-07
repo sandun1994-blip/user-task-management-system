@@ -18,8 +18,8 @@ const SidebarItem = ({ label, href, Icon }: Props) => {
     <Link href={href}>
       <div
         className={cn(
-          " p-3 flex items-center gap-x-3  mr-5 hover:bg-sky-200 rounded-lg   text-md font-medium hover:text-blue-500",
-          active && "bg-sky-200 text-blue-500"
+          " p-3 flex items-center gap-x-3  mr-5 hover:bg-sky-200 rounded-lg   text-md font-medium hover:text-blue-800",
+          active && "bg-sky-200 text-blue-950"
         )}
       >
         <Icon className="w-6 h-6" />

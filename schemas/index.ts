@@ -29,6 +29,7 @@ export const TaskSchema = z.object({
     userId: z.string()
   });
 
+  export type TaskSchemaType=z.infer<typeof TaskSchema>
   export const defaultTaskData = {
     title: '',
     description:'',
