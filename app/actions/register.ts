@@ -4,6 +4,7 @@ import { getUserByEmail } from "@/data/user";
 import { db } from "@/lib/db";
 import { RegisterSchema } from "@/schemas";
 import bcrypt from "bcryptjs";
+import { redirect } from "next/navigation";
 
 export const register = async (values: any) => {
   
@@ -30,6 +31,6 @@ export const register = async (values: any) => {
       password: hashedPassword,
     },
   });
-  
+  redirect('/auth/login')
   return { success: "User Created" };
 };

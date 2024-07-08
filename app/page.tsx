@@ -17,7 +17,7 @@ export default function Home() {
       <div className="space-y-10 text-center">
         <h1
           className={cn(
-            "text-6xl font-semibold text-white drop-shadow-md capitalize",
+            "text-2xl md:text-6xl font-semibold text-white drop-shadow-md capitalize",
             font.className
           )}
         >

@@ -17,7 +17,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Priority, Task } from "@prisma/client";
+import { Priority, Status, Task } from "@prisma/client";
 import { GrView } from "react-icons/gr";
 import { HiDotsVertical } from "react-icons/hi";
 import { FaEdit } from "react-icons/fa";
@@ -26,6 +26,11 @@ import { cn } from "@/lib/utils";
 import { getStatus } from "@/data/getStatus";
 import { Dispatch, SetStateAction } from "react";
 import { Action } from "@/types";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 
 type Props = {
   task: Task;
@@ -57,7 +62,7 @@ const TaskCard = ({
     setOpenDelete((pre) => !pre);
   };
   return (
-    <Card className="w-[350px] md:w-[270px] lg:w-[350px]">
+    <Card className="">
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="capitalize">{task.title} </CardTitle>
@@ -104,22 +109,35 @@ const TaskCard = ({
         </CardDescription>
       </CardHeader>
 
-      <CardFooter className="flex justify-between">
+      <CardFooter className="flex justify-between ">
         <Button
           variant="ghost"
-          className="h-6 rounded-sm text-[11px] bg-gray-100 cursor-auto"
+          className={cn(
+            "h-6 rounded-sm text-[11px] bg-red-100 cursor-auto",
+            task.status === Status.DONE && "bg-green-100",
+            task.status === Status.IN_PROGRESS && "bg-yellow-100"
+          )}
         >
           {getStatus(task.status)}
         </Button>
-        <Avatar
-          className={cn(
-            "bg-red-500 mr-3 w-6 h-6 text-sm text-center flex items-center justify-center font-semibold text-white",
-            task.priority === Priority.LOW && "bg-green-500",
-            task.priority === Priority.MEDIUM && "bg-yellow-500"
-          )}
-        >
-          {task.priority[0]}
-        </Avatar>
+        <HoverCard>
+          <HoverCardTrigger asChild>
+            <Avatar
+              className={cn(
+                "bg-red-500 cursor-pointer  w-6 h-6 text-sm text-center flex items-center justify-center font-semibold text-white mr-3",
+                task.priority === Priority.LOW && "bg-green-500",
+                task.priority === Priority.MEDIUM && "bg-yellow-500"
+              )}
+            >
+              
+            </Avatar>
+          </HoverCardTrigger>
+          <HoverCardContent className="w-30 ">
+            <div className="text-[12px] text-gray-500 uppercase">
+            Priority :  {task.priority}
+            </div>
+          </HoverCardContent>
+        </HoverCard>
       </CardFooter>
     </Card>
   );
